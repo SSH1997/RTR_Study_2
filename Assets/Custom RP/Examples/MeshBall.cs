@@ -10,8 +10,8 @@ public class MeshBall : MonoBehaviour {
     [SerializeField]
     Material material = default;
     
-    Matrix4x4[] matrices = new Matrix4x4[1023];
-    Vector4[] baseColors = new Vector4[1023];
+    Matrix4x4[] matrices = new Matrix4x4[3];
+    Vector4[] baseColors = new Vector4[3];
 
     MaterialPropertyBlock block;
     
@@ -34,6 +34,6 @@ public class MeshBall : MonoBehaviour {
             block = new MaterialPropertyBlock();
             block.SetVectorArray(baseColorId, baseColors);
         }
-        Graphics.DrawMeshInstanced(mesh, 0, material, matrices, 1023, block);
+        Graphics.DrawMeshInstanced(mesh, 0, material, matrices, 3, block);
     }
 }
