@@ -10,8 +10,13 @@ Shader "Custom RP/Lit" {
 		// 알파 CutOff 기능을 위한 변수 정의
 		_Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 		
+		_Metallic ("Metallic", Range(0, 1)) = 0
+		
+		_Smoothness ("Smoothness", Range(0, 1)) = 0.5
+		
 		// 알파 클리핑을 할지 말지에 대한 변수 정의
 		[Toggle(_CLIPPING)] _Clipping ("Alpha Clipping", Float) = 0
+		[Toggle(_PREMULTIPLY_ALPHA)] _PremulAlpha ("Premultiply Alpha", Float) = 0
 		
 		// 블랜딩 모드 지원 속성 정의
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1
@@ -41,6 +46,8 @@ Shader "Custom RP/Lit" {
 		    // _CLIPPING이 정의되면 해당 부분의 코드를 컴파일
 		    #pragma shader_feature _CLIPPING
 
+		    #pragma shader_feature _PREMULTIPLY_ALPHA
+
 		    // 인스턴싱이 사용되면 해당 부분의 코드를 컴파일
 		    #pragma multi_compile_instancing
 
@@ -55,4 +62,6 @@ Shader "Custom RP/Lit" {
 		    ENDHLSL
 		}
 	}
+
+	CustomEditor "CustomShaderGUI"
 }

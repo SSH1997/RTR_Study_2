@@ -7,6 +7,7 @@
 
 // 기본적인 매크로를 얻어오기 위해 include 하는 core 라이브러리
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 
 // 미리 정의한 유니폼 변수들을 include 하고,
 #include "UnityInput.hlsl"
@@ -32,7 +33,13 @@ UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DEFINE_INSTANCED_PROP(float, _Cutoff)
+    UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
+    UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
 // 유니티 인스턴싱 버퍼 정의 끝
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
+
+float Square (float v) {
+    return v * v;
+}
 
 #endif
