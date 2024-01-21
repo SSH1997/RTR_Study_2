@@ -36,7 +36,6 @@ public class Lighting {
         int dirLightCount = 0;
         for (int i = 0; i < visibleLights.Length; i++) {
             VisibleLight visibleLight = visibleLights[i];
-            SetupDirectionalLight(dirLightCount++, ref visibleLight);
             if (visibleLight.lightType == LightType.Directional) {
                 SetupDirectionalLight(dirLightCount++, ref visibleLight);
                 if (dirLightCount >= maxDirLightCount) {
