@@ -14,16 +14,12 @@
 	#define GI_FRAGMENT_DATA(input) 0.0
 #endif
 
-#include "../ShaderLibrary/Common.hlsl"
 #include "../ShaderLibrary/Surface.hlsl"
 #include "../ShaderLibrary/Shadows.hlsl"
 #include "../ShaderLibrary/Light.hlsl"
 #include "../ShaderLibrary/BRDF.hlsl"
 #include "../ShaderLibrary/GI.hlsl"
 #include "../ShaderLibrary/Lighting.hlsl"
-
-TEXTURE2D(_BaseMap);
-SAMPLER(sampler_BaseMap);
 
 struct Attributes
 {
@@ -57,8 +53,7 @@ Varyings LitPassVertex (Attributes input) {
 	output.positionCS.z =
 		max(output.positionCS.z, output.positionCS.w * UNITY_NEAR_CLIP_VALUE);
 	#endif
-	float4 baseST = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST);
-	output.baseUV = input.baseUV * baseST.xy + baseST.zw;
+	output.baseUV = TransformBaseUV(input.baseUV);
 	output.normalWS = TransformObjectToWorldNormal(input.normalOS);
 	return output;
 }
@@ -66,9 +61,10 @@ Varyings LitPassVertex (Attributes input) {
 float4 LitPassFragment(Varyings input) : SV_TARGET
 {
 	UNITY_SETUP_INSTANCE_ID(input);
-	float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.baseUV);
-	float4 baseColor = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
-	float4 base = baseMap * baseColor;
+	float4 base = GetBase(input.baseUV);
+	#if defined(_CLIPPING)
+	clip(base.a - GetCutoff(input.baseUV));
+	#endif
 	#if defined(_CLIPPING)
 		clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));
 	#endif
@@ -79,9 +75,8 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
 	surface.depth = -TransformWorldToView(input.positionWS).z;
 	surface.color = base.rgb;
 	surface.alpha = base.a;
-	surface.metallic = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic);
-	surface.smoothness =
-		UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness);
+	surface.metallic = GetMetallic(input.baseUV);
+	surface.smoothness = GetSmoothness(input.baseUV);
 	surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
 
 	#if defined(_PREMULTIPLY_ALPHA)
@@ -91,6 +86,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
 	#endif
 	GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
 	float3 color = GetLighting(surface, brdf, gi);
+	color += GetEmission(input.baseUV);
 	return float4(color, surface.alpha);
 }
 

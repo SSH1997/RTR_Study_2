@@ -1,11 +1,6 @@
 #ifndef CUSTOM_SHADOW_CASTER_PASS_INCLUDED
 #define CUSTOM_SHADOW_CASTER_PASS_INCLUDED
 
-#include "../ShaderLibrary/Common.hlsl"
-
-TEXTURE2D(_BaseMap);
-SAMPLER(sampler_BaseMap);
-
 struct Attributes {
 	float3 positionOS : POSITION;
 	float2 baseUV : TEXCOORD0;
